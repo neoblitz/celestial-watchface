@@ -140,6 +140,7 @@ class MarsWatchFaceView extends WatchUi.WatchFace {
         // Sun + local-time state via the generic Site module.
         var sst = Site.sunState(planetIdx, lat, lonE, now);
         var alt = sst.alt;
+        var sunAz = sst.az;
         var lmstHr = sst.localSolar;
         var sunriseHr = sst.sunrise;
         var sunsetHr = sst.sunset;
@@ -190,15 +191,32 @@ class MarsWatchFaceView extends WatchUi.WatchFace {
             dc.fillRectangle(0, horizonY - 22, w, 22);
         }
 
-        // Low sun, clamped near the horizon so it never reaches the time digits.
+        // Sun glyph at its actual alt/az. Observer faces the cardinal direction
+        // the sun crosses the meridian on — i.e. south when the sun's
+        // declination is south of the observer (the usual case for the NH and
+        // for summer in the SH), north otherwise.
         if (!mSleeping && alt > -2.0) {
-            var sa = (alt < 0.0) ? 0.0 : alt;
-            if (sa > 25.0) { sa = 25.0; }
-            var sunX = cx + ((lmstHr - 12.0) / 6.0) * (w * 0.34);
-            if (sunX < 50) { sunX = 50; }
-            if (sunX > w - 50) { sunX = w - 50; }
-            var sunY = horizonY - 8 - (sa / 25.0) * (h * 14 / 100);
-            drawSun(dc, sunX, sunY, 12);
+            var facing = (sst.sunDec < lat) ? 180.0 : 0.0;
+            var relAz = sunAz - facing;
+            if (relAz >  180.0) { relAz -= 360.0; }
+            if (relAz < -180.0) { relAz += 360.0; }
+            if (relAz >= -90.0 && relAz <= 90.0) {
+                // Linear angular projection: full horizon span = ±90° around facing.
+                var sunX = cx + (relAz / 90.0) * (w * 0.42);
+                var sa = (alt < 0.0) ? 0.0 : alt;
+                // Vertical: alt=0 → horizon, alt=90 → just above the heart row.
+                var topY = h * 30 / 100;
+                var sunY = horizonY - (sa / 90.0) * (horizonY - topY);
+                // Keep the sun inside the round dial edge.
+                var dx = sunX - cx; var dy = sunY - cy;
+                var rMax = (w / 2) - 26;
+                var d = Math.sqrt(dx * dx + dy * dy);
+                if (d > rMax) {
+                    sunX = cx + dx * rMax / d;
+                    sunY = cy + dy * rMax / d;
+                }
+                drawSun(dc, sunX, sunY, 12);
+            }
         }
 
         // Foreground terrain / hill silhouette.

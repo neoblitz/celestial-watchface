@@ -52,6 +52,7 @@ module Site {
 
     class SunState {
         var alt;          // solar altitude (deg)
+        var az;           // solar azimuth from N, clockwise (deg)
         var sunRA;        // sun RA in planet frame (deg)
         var sunDec;       // sun declination in planet frame (deg)
         var lstHours;     // local sidereal time (hours)
@@ -95,6 +96,10 @@ module Site {
         var dec = d2r(sunDec);
         var sinAlt = Math.sin(lat) * Math.sin(dec) + Math.cos(lat) * Math.cos(dec) * Math.cos(H);
         var alt = r2d(Math.asin(sinAlt));
+        // Sun azimuth from N, clockwise.
+        var azRad = Math.atan2(Math.sin(H),
+                      Math.cos(H) * Math.sin(lat) - Math.tan(dec) * Math.cos(lat));
+        var az = norm360(r2d(azRad) + 180.0d);
 
         // Local mean solar time (hours, 0-24): "noon = sun at upper transit".
         // localSolar = 12 + hour_angle_hours.
@@ -115,7 +120,7 @@ module Site {
         }
 
         var st = new SunState();
-        st.alt = alt; st.sunRA = sunRA; st.sunDec = sunDec;
+        st.alt = alt; st.az = az; st.sunRA = sunRA; st.sunDec = sunDec;
         st.lstHours = lstHours; st.localSolar = localSolar;
         st.sunrise = sunrise; st.sunset = sunset; st.polar = polar;
         st.isDay = (alt > 0.0d);

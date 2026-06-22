@@ -1,0 +1,7 @@
+<strings>
+    <string id="AppName">Celestial Watchface</string>
+    <string id="PlanetIndex">Observer planet</string>
+    <string id="ShowMarsTime">Show Mars (Gale) time</string>
+    <string id="PhobosCal">Phobos phase calibration (deg)</string>
+    <string id="DeimosCal">Deimos phase calibration (deg)</string>
+</strings>

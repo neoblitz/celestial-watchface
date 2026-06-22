@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<iq:manifest xmlns:iq="http://www.garmin.com/xml/connectiq" version="3">
+    <iq:application entry="MarsWatchFaceApp"
+                    id="c5328ec2f48a4242a3efe2b2ab63e1f5"
+                    launcherIcon="@Drawables.LauncherIcon"
+                    minApiLevel="3.2.0"
+                    name="@Strings.AppName"
+                    type="watchface"
+                    version="1.0.0">
+        <iq:products>
+            <iq:product id="venu3"/>
+        </iq:products>
+        <iq:permissions>
+            <iq:uses-permission id="Positioning"/>
+        </iq:permissions>
+        <iq:languages>
+            <iq:language>eng</iq:language>
+        </iq:languages>
+    </iq:application>
+</iq:manifest>

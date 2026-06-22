@@ -1,0 +1,24 @@
+<settings>
+    <setting propertyKey="@Properties.planetIndex" title="@Strings.PlanetIndex">
+        <settingConfig type="list">
+            <listEntry value="0">Mercury</listEntry>
+            <listEntry value="1">Venus</listEntry>
+            <listEntry value="2">Earth (my GPS location)</listEntry>
+            <listEntry value="3">Mars (Gale Crater)</listEntry>
+            <listEntry value="4">Jupiter</listEntry>
+            <listEntry value="5">Saturn</listEntry>
+            <listEntry value="6">Uranus</listEntry>
+            <listEntry value="7">Neptune</listEntry>
+            <listEntry value="8">Pluto</listEntry>
+        </settingConfig>
+    </setting>
+    <setting propertyKey="@Properties.showMarsTime" title="@Strings.ShowMarsTime">
+        <settingConfig type="boolean" />
+    </setting>
+    <setting propertyKey="@Properties.phobosCal" title="@Strings.PhobosCal">
+        <settingConfig type="numeric" min="-180" max="180" />
+    </setting>
+    <setting propertyKey="@Properties.deimosCal" title="@Strings.DeimosCal">
+        <settingConfig type="numeric" min="-180" max="180" />
+    </setting>
+</settings>

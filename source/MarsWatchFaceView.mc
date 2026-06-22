@@ -46,12 +46,22 @@ class MarsWatchFaceView extends WatchUi.WatchFace {
     }
 
     function drawSun(dc, x, y, r) {
+        if (r < 4) {
+            // Distant sun: just a bright pinprick with a small halo.
+            dc.setColor(0xC8662A, Graphics.COLOR_TRANSPARENT);
+            dc.fillCircle(x, y, r + 2);
+            dc.setColor(0xFFE6B0, Graphics.COLOR_TRANSPARENT);
+            dc.fillCircle(x, y, r);
+            return;
+        }
         dc.setColor(0xC8662A, Graphics.COLOR_TRANSPARENT);
         dc.fillCircle(x, y, r + 5);
         dc.setColor(C_SUN, Graphics.COLOR_TRANSPARENT);
         dc.fillCircle(x, y, r);
-        dc.setColor(0xFFE6B0, Graphics.COLOR_TRANSPARENT);
-        dc.fillCircle(x, y, r - 6);
+        if (r > 6) {
+            dc.setColor(0xFFE6B0, Graphics.COLOR_TRANSPARENT);
+            dc.fillCircle(x, y, r - 6);
+        }
     }
 
     // Single watch hand drawn as a thick line, with a small overhang behind
@@ -207,15 +217,19 @@ class MarsWatchFaceView extends WatchUi.WatchFace {
                 // Vertical: alt=0 → horizon, alt=90 → just above the heart row.
                 var topY = h * 30 / 100;
                 var sunY = horizonY - (sa / 90.0) * (horizonY - topY);
-                // Keep the sun inside the round dial edge.
+                // Sun's angular size scales as 1 / distance. Anchor: 12 px at 1 AU.
+                var sunR = (12.0 / sst.dist).toNumber();
+                if (sunR < 2)  { sunR = 2;  }
+                if (sunR > 32) { sunR = 32; }
+                // Keep the sun (including its halo) inside the round dial edge.
                 var dx = sunX - cx; var dy = sunY - cy;
-                var rMax = (w / 2) - 26;
+                var rMax = (w / 2) - 26 - sunR / 2;
                 var d = Math.sqrt(dx * dx + dy * dy);
                 if (d > rMax) {
                     sunX = cx + dx * rMax / d;
                     sunY = cy + dy * rMax / d;
                 }
-                drawSun(dc, sunX, sunY, 12);
+                drawSun(dc, sunX, sunY, sunR);
             }
         }
 

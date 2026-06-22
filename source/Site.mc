@@ -53,6 +53,7 @@ module Site {
     class SunState {
         var alt;          // solar altitude (deg)
         var az;           // solar azimuth from N, clockwise (deg)
+        var dist;         // observer-to-sun distance (AU)
         var sunRA;        // sun RA in planet frame (deg)
         var sunDec;       // sun declination in planet frame (deg)
         var lstHours;     // local sidereal time (hours)
@@ -120,7 +121,8 @@ module Site {
         }
 
         var st = new SunState();
-        st.alt = alt; st.az = az; st.sunRA = sunRA; st.sunDec = sunDec;
+        st.alt = alt; st.az = az; st.dist = dist;
+        st.sunRA = sunRA; st.sunDec = sunDec;
         st.lstHours = lstHours; st.localSolar = localSolar;
         st.sunrise = sunrise; st.sunset = sunset; st.polar = polar;
         st.isDay = (alt > 0.0d);

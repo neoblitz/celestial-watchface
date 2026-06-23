@@ -16,7 +16,7 @@ using Toybox.Lang;
 // (Mercury not requested; you can't see Mars from Mars). The Moon is computed
 // separately via a simplified lunar mean longitude; from Mars distance the
 // Earth-Moon angular separation is ~0.1 deg so they'll plot as a tight pair.
-module MarsPlanets {
+module Kepler {
 
     // [a (AU), e, i (deg), Omega (deg), longPeri (deg), L0 (deg), Ldot (deg/day)]
     const MERCURY = [  0.38709927d, 0.20563593d,  7.00497902d,  48.33076593d,  77.45779628d, 252.25032350d, 4.09233444d];

@@ -9,7 +9,7 @@ using Toybox.ActivityMonitor;
 using Toybox.Activity;
 using Toybox.Position;
 
-class MarsWatchFaceView extends WatchUi.WatchFace {
+class CelestialView extends WatchUi.WatchFace {
 
     // Palette
     const C_MARS    = 0xCC4422;   // rust accent / Mars hour hand
@@ -166,7 +166,7 @@ class MarsWatchFaceView extends WatchUi.WatchFace {
             var dv = Application.Properties.getValue("deimosCal");
             if (pv != null) { pcal = pv; }
             if (dv != null) { dcal = dv; }
-            mn = MarsMoons.compute(now, MarsTime.SITE_LAT, MarsTime.SITE_EAST,
+            mn = MarsMoons.compute(now, Bodies.SITES[Bodies.MARS][0], Bodies.SITES[Bodies.MARS][1],
                                    pcal, dcal);
         }
 

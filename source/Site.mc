@@ -70,7 +70,7 @@ module Site {
         var d = jdtt - 2451545.0d;
 
         // Planet helio ecliptic position via Kepler (delegates to MarsPlanets).
-        var helio = MarsPlanets.helioEcliptic(Bodies.ELEM[planetIdx], d);
+        var helio = Kepler.helioEcliptic(Bodies.ELEM[planetIdx], d);
         var dist = Math.sqrt(helio[0]*helio[0] + helio[1]*helio[1] + helio[2]*helio[2]);
         // Sun direction from planet = -helio_unit (ecliptic frame).
         var sunEcl = [-helio[0] / dist, -helio[1] / dist, -helio[2] / dist];
@@ -145,9 +145,9 @@ module Site {
         var nx = -sinLat * cosT; var ny = -sinLat * sinT; var nz = cosLat;
 
         var out = [];
-        for (var i = 0; i < MarsSky.STARS.size(); i += 1) {
-            var sra = MarsSky.STARS[i][0]; var sdec = MarsSky.STARS[i][1];
-            var rad = MarsSky.STARS[i][2];
+        for (var i = 0; i < Stars.STARS.size(); i += 1) {
+            var sra = Stars.STARS[i][0]; var sdec = Stars.STARS[i][1];
+            var rad = Stars.STARS[i][2];
             var cd = Math.cos(d2r(sdec));
             var ev = [cd * Math.cos(d2r(sra)), cd * Math.sin(d2r(sra)), Math.sin(d2r(sdec))];
             var pv = applyR(R, ev);
@@ -158,7 +158,7 @@ module Site {
             sp.alt  = r2d(Math.asin(u));
             sp.az   = norm360(r2d(Math.atan2(e, n)));
             sp.r    = rad;
-            sp.name = MarsSky.NAMES[i];
+            sp.name = Stars.NAMES[i];
             out.add(sp);
         }
         return out;
@@ -173,7 +173,7 @@ module Site {
         var jdtt = 2440587.5d + s / 86400.0d + 69.184d / 86400.0d;
         var d = jdtt - 2451545.0d;
 
-        var obsHelio = MarsPlanets.helioEcliptic(Bodies.ELEM[observerIdx], d);
+        var obsHelio = Kepler.helioEcliptic(Bodies.ELEM[observerIdx], d);
         var pole = Bodies.POLES[observerIdx];
         var R = frameMatrix(pole[0], pole[1]);
         var lat = d2r(latDeg);
@@ -187,7 +187,7 @@ module Site {
         var out = [];
         for (var i = 0; i < Bodies.NAMES.size(); i += 1) {
             if (i == observerIdx) { continue; }   // can't see yourself
-            var helio = MarsPlanets.helioEcliptic(Bodies.ELEM[i], d);
+            var helio = Kepler.helioEcliptic(Bodies.ELEM[i], d);
             var rel = [helio[0] - obsHelio[0], helio[1] - obsHelio[1], helio[2] - obsHelio[2]];
             var relEq = eclipticToEquatorial(rel);
             var relP = applyR(R, relEq);

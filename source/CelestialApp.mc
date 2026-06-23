@@ -1,7 +1,7 @@
 using Toybox.Application;
 using Toybox.WatchUi;
 
-class MarsWatchFaceApp extends Application.AppBase {
+class CelestialApp extends Application.AppBase {
 
     function initialize() {
         AppBase.initialize();
@@ -12,7 +12,7 @@ class MarsWatchFaceApp extends Application.AppBase {
     function onStop(state) {}
 
     function getInitialView() {
-        return [ new MarsWatchFaceView() ];
+        return [ new CelestialView() ];
     }
 
     // Redraw immediately when calibration settings change on the phone.

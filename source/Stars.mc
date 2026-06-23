@@ -16,7 +16,7 @@ using Toybox.Lang;
 // Accuracy: positions good to small fractions of a degree (atmospheric
 // refraction, proper motion, precession-since-J2000 all ignored — none of
 // which matters at this screen resolution). Yale BSC magnitudes baked in.
-module MarsSky {
+module Stars {
 
     // IAU Mars pole orientation (J2000), degrees.
     const POLE_RA  = 317.68143d;

@@ -109,17 +109,16 @@ manifest.xml           app id, targets venu3, asks for Position permission
 monkey.jungle          build config
 build.sh               builds a signed .prg (and can launch the sim)
 source/
-  MarsWatchFaceApp.mc  application entry point
-  MarsWatchFaceView.mc all drawing — dispatches to Mars/Earth/Site per setting
-  Bodies.mc            orbital elements + IAU pole/rotation + site for the 9 worlds
-  Site.mc              generic sun/stars/planets computation for any observer planet
-  MarsTime.mc          Mars24 algorithm — used only for Gale's site lat/lon constants
-  MarsMoons.mc         Phobos & Deimos topocentric positions
-  MarsSky.mc           bundled bright-star catalog (RA/Dec, name, magnitude)
-  MarsPlanets.mc       orbital element propagation (helioEcliptic helper)
-  EarthTime.mc         Earth-specific NOAA sun model + RA/Dec → alt/az helper
-  EarthSky.mc          / EarthPlanets.mc — Earth-specific projections
-  Cities.mc            ~210 world cities for Earth's nearest-city lookup
+  CelestialApp.mc     application entry point
+  CelestialView.mc    all drawing — analog hands, sky, day/night ring, site label
+  Bodies.mc           orbital elements + IAU pole + rotation + landmark site
+                      for the 9 worlds
+  Site.mc             generic observer-on-planet astronomy: sun, sunrise/sunset,
+                      LST, star catalog projection, other planets in the sky
+  Stars.mc            bundled bright-star catalog (RA/Dec, name, magnitude)
+  Kepler.mc           Keplerian orbital propagation (helioEcliptic helper)
+  MarsMoons.mc        Phobos & Deimos topocentric positions (Mars-only feature)
+  Cities.mc           ~210 world cities for Earth's nearest-city lookup
 resources/
   strings/strings.xml
   drawables/launcher_icon.png

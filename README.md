@@ -85,9 +85,15 @@ You need Garmin's free **Connect IQ SDK** (Java 18+ is a prerequisite).
 2. Build:
    ```bash
    cd ~/Dropbox/Private/Projects/CelestialWatchface
-   ./build.sh            # creates bin/CelestialWatchface.prg (generates a signing key first run)
+   ./build.sh            # creates bin/CelestialWatchface.prg
    ./build.sh sim        # also opens the simulator with the watchface loaded
    ```
+   The signing key is read from `~/.garmin/celestial/developer_key.der`
+   (kept outside this synced folder so the private key never reaches the
+   cloud). Override the path with `CIQ_KEY=/path/to/key.der`. The master
+   `.pem` is backed up in 1Password — if the key is ever missing, restore
+   it from there rather than generating a new one (a new key would break
+   store updates).
 3. Sideload to the watch:
    - Connect the watch by USB.
    - Copy `bin/CelestialWatchface.prg` to the watch's `GARMIN/Apps/` folder.

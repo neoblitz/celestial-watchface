@@ -22,16 +22,23 @@ fi
 echo "Using SDK: $SDK"
 
 MONKEYC="$SDK/bin/monkeyc"
-KEY="developer_key.der"
 OUT="bin/CelestialWatchface.prg"
 DEVICE="venu3"
 
-# --- Developer key (one-time) ---
+# --- Developer signing key ---
+# Kept OUTSIDE this (Dropbox-synced) project so the private key never syncs to
+# the cloud. Override with CIQ_KEY=/path/to/key.der if you store it elsewhere.
+KEY="${CIQ_KEY:-$HOME/.garmin/celestial/developer_key.der}"
 if [[ ! -f "$KEY" ]]; then
-  echo "Generating a one-time developer signing key ($KEY)..."
-  openssl genrsa -out developer_key.pem 4096
-  openssl pkcs8 -topk8 -inform PEM -outform DER -in developer_key.pem \
-          -out "$KEY" -nocrypt
+  echo "ERROR: signing key not found at: $KEY"
+  echo "This app is already published — do NOT generate a new key (that would"
+  echo "create a different identity and break store updates)."
+  echo "Restore developer_key.pem from 1Password, then run:"
+  echo "  mkdir -p \"\$HOME/.garmin/celestial\""
+  echo "  openssl pkcs8 -topk8 -inform PEM -outform DER \\"
+  echo "    -in developer_key.pem -out \"$KEY\" -nocrypt"
+  echo "  chmod 600 \"$KEY\""
+  exit 1
 fi
 
 mkdir -p bin

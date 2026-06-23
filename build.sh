@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Build the Mars Gale Time watchface into a sideloadable .prg
+# Build the Celestial Watchface into a sideloadable .prg
 # Usage: ./build.sh            # build release .prg for venu3
 #        ./build.sh sim        # build + launch in the simulator
 set -euo pipefail

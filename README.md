@@ -84,7 +84,7 @@ You need Garmin's free **Connect IQ SDK** (Java 18+ is a prerequisite).
    **Venu 3** device files.
 2. Build:
    ```bash
-   cd ~/GarminDev/CelestialWatchface
+   cd ~/Dropbox/Projects/CelestialWatchface
    ./build.sh            # creates bin/CelestialWatchface.prg (generates a signing key first run)
    ./build.sh sim        # also opens the simulator with the watchface loaded
    ```

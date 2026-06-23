@@ -96,6 +96,30 @@ class CelestialView extends WatchUi.WatchFace {
         dc.fillCircle(cx, cy, 3);
     }
 
+    // Halve each RGB channel — used to dim the hour hand in low-power mode.
+    function dimColor(c) {
+        var r = (c >> 16) & 0xFF;
+        var g = (c >> 8) & 0xFF;
+        var b = c & 0xFF;
+        return ((r / 2) << 16) | ((g / 2) << 8) | (b / 2);
+    }
+
+    // Always-on / low-power face: black field, thin hour + minute hands, small
+    // hub. Burn-in safe — minimal lit pixels, and the hands sweep each minute.
+    function drawLowPower(dc, w, h, cx, cy, planetIdx) {
+        dc.setColor(0x000000, 0x000000);
+        dc.clear();
+        var clk = System.getClockTime();
+        var hourAngle = (clk.hour % 12) * 30.0 + clk.min * 0.5;
+        var minAngle  = clk.min * 6.0;
+        var minuteLen = (w / 2) - 30;
+        var hourLen   = minuteLen * 60 / 100;
+        drawHand(dc, cx, cy, hourLen,   2, hourAngle, dimColor(Bodies.COLORS[planetIdx]));
+        drawHand(dc, cx, cy, minuteLen, 2, minAngle,  0x646464);
+        dc.setColor(0x646464, Graphics.COLOR_TRANSPARENT);
+        dc.fillCircle(cx, cy, 3);
+    }
+
     // Small heart icon: two lobes + a triangular point. ~14px wide, ~12 tall.
     function drawHeart(dc, x, y, color) {
         dc.setColor(color, Graphics.COLOR_TRANSPARENT);
@@ -130,6 +154,16 @@ class CelestialView extends WatchUi.WatchFace {
         var piv = Application.Properties.getValue("planetIndex");
         if (piv != null) { planetIdx = piv; }
         if (planetIdx < 0 || planetIdx > 8) { planetIdx = Bodies.MARS; }
+
+        // Always-on / low-power: draw a minimal, burn-in-safe face and bail.
+        // Only thin hands + a center dot on a black field (well under the
+        // ~10% lit-pixel budget AMOLED devices want), and the hands move each
+        // minute so no pixel stays lit in one place.
+        if (mSleeping) {
+            drawLowPower(dc, w, h, cx, cy, planetIdx);
+            return;
+        }
+
         var mode = (planetIdx == Bodies.EARTH) ? "earth" : "mars";
 
         // Observer location per planet. Earth uses live GPS; others use the

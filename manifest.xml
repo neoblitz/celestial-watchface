@@ -8,7 +8,36 @@
                     type="watchface"
                     version="1.0.0">
         <iq:products>
+            <!-- Round AMOLED watches (square displays, CIQ 5.0+). Layout is
+                 ratio-based off screen size, so 360 / 390 / 416 / 454 all work.
+                 Venu X1 (448x486, non-square) is intentionally excluded. -->
+            <!-- Venu line -->
+            <iq:product id="venu2"/>
+            <iq:product id="venu2s"/>
+            <iq:product id="venu2plus"/>
             <iq:product id="venu3"/>
+            <iq:product id="venu3s"/>
+            <iq:product id="venu441mm"/>
+            <iq:product id="venu445mm"/>
+            <!-- Vivoactive -->
+            <iq:product id="vivoactive5"/>
+            <iq:product id="vivoactive6"/>
+            <!-- Forerunner AMOLED -->
+            <iq:product id="fr165"/>
+            <iq:product id="fr265"/>
+            <iq:product id="fr265s"/>
+            <iq:product id="fr965"/>
+            <iq:product id="fr970"/>
+            <!-- epix / fenix AMOLED -->
+            <iq:product id="epix2"/>
+            <iq:product id="epix2pro42mm"/>
+            <iq:product id="epix2pro47mm"/>
+            <iq:product id="epix2pro51mm"/>
+            <iq:product id="fenix843mm"/>
+            <iq:product id="fenix847mm"/>
+            <!-- D2 / MARQ AMOLED -->
+            <iq:product id="d2mach1"/>
+            <iq:product id="marq2"/>
         </iq:products>
         <iq:permissions>
             <iq:uses-permission id="Positioning"/>

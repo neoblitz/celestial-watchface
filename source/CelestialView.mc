@@ -306,65 +306,77 @@ class CelestialView extends WatchUi.WatchFace {
                 }
             }
             dc.setColor(0x8A8FA0, Graphics.COLOR_TRANSPARENT);
-            // Pre-reserve all UI bboxes so labels never collide with them:
-            // site label, heart row, big time digits, MARS line (if shown),
-            // and the four compass markers.
+            // Pre-reserve UI bboxes so labels never overlap them. Each bbox
+            // is the actual rendered text bounds with a couple of pixels'
+            // padding. Compass markers and analog hand hub are also reserved.
             var rMarkPre = rSky + 4;
             var sitePre = h * 78 / 454;
             var heartPre = h * 110 / 454;
             var marsLinePre = h * 274 / 454;
+            // FONT_XTINY rendered text height is ~14 px (y..y+14). Sites/
+            // labels can be up to ~21 chars wide ("EARTH · San Francisco")
+            // → ~150 px. Site label centered, so half-width = 75.
             var placed = [
-                // Site label band
-                [cx - 95, sitePre - 10,  cx + 95, sitePre + 12],
-                // Heart row band
-                [cx - 40, heartPre - 4,  cx + 40, heartPre + 18],
-                // Big time digits
-                [cx - 110, cy - 38,      cx + 110, cy + 38],
-                // Compass markers
-                [cx - 10,            cy - rMarkPre - 12, cx + 10,            cy - rMarkPre + 8],
-                [cx + rMarkPre - 14, cy - 22,            cx + rMarkPre + 2,  cy - 2],
-                [cx - rMarkPre - 2,  cy - 22,            cx - rMarkPre + 14, cy - 2],
-                [cx - 10,            cy + rMarkPre - 50, cx + 10,            cy + rMarkPre - 30]
+                // Site label
+                [cx - 80, sitePre - 2,    cx + 80, sitePre + 16],
+                // Heart row (heart icon + HR text)
+                [cx - 40, heartPre - 4,   cx + 40, heartPre + 18],
+                // Analog hub + immediate center (hands draw on top anyway)
+                [cx - 20, cy - 20,        cx + 20, cy + 20],
+                // Compass N
+                [cx - 10, cy - rMarkPre - 4,  cx + 10, cy - rMarkPre + 12],
+                // Compass E
+                [cx + rMarkPre - 14, cy - 14,   cx + rMarkPre + 4, cy + 4],
+                // Compass W
+                [cx - rMarkPre - 4,  cy - 14,   cx - rMarkPre + 14, cy + 4],
+                // Compass S
+                [cx - 10, cy + rMarkPre - 42, cx + 10, cy + rMarkPre - 26]
             ];
             // Optional local-time line.
             var smvPre = Application.Properties.getValue("showMarsTime");
             if (smvPre != null && smvPre && planetIdx != Bodies.EARTH) {
-                placed.add([cx - 70, marsLinePre - 4, cx + 70, marsLinePre + 22]);
+                placed.add([cx - 80, marsLinePre - 2, cx + 80, marsLinePre + 24]);
             }
             var maxLabels = 8;
             var drawnLabels = 0;
+            var fontH = dc.getFontHeight(Graphics.FONT_XTINY);
+            var rDial = (w / 2) - 14;
             for (var i = 0; i < labelables.size() && drawnLabels < maxLabels; i += 1) {
                 var lx = labelables[i][0];
                 var ly = labelables[i][1];
-                // Decide which side: prefer outward from center, but flip if the
-                // chosen side would clip off the screen edge.
+                var name = labelables[i][3];
+                var txtW = dc.getTextWidthInPixels(name, Graphics.FONT_XTINY);
+                // Label is drawn one font-height above the star, justified to
+                // whichever side has room inside the round dial.
+                var ty = ly - fontH;
                 var labelRight = (lx >= cx);
-                var estWidth = labelables[i][3].length() * 7;   // ~7px/char at XTINY
-                // Account for the round dial: at the label's y, the visible
-                // x range is narrower than [0,w]. Use the chord half-width.
-                var dy = ly - 14 - cy;
-                var rDial = (w / 2) - 14;
-                var rr2 = rDial * rDial - dy * dy;
+                // Round-dial chord at the most restrictive y (top vs bottom
+                // of the label text). 14 px inward safety margin.
+                var dyTop = ty - cy;
+                var dyBot = ty + fontH - cy;
+                var dyA = (dyTop < 0) ? -dyTop : dyTop;
+                var dyB = (dyBot < 0) ? -dyBot : dyBot;
+                var dyMax = (dyB > dyA) ? dyB : dyA;
+                var rr2 = rDial * rDial - dyMax * dyMax;
                 var halfChord = (rr2 > 0) ? Math.sqrt(rr2).toNumber() : 0;
                 var xMin = cx - halfChord + 14;
                 var xMax = cx + halfChord - 14;
-                if (labelRight && lx + 8 + estWidth > xMax) { labelRight = false; }
-                if (!labelRight && lx - 8 - estWidth < xMin) { labelRight = true; }
-                // If neither side fits, skip this label entirely.
-                if ( labelRight && lx + 8 + estWidth > xMax) { continue; }
-                if (!labelRight && lx - 8 - estWidth < xMin) { continue; }
+                if (labelRight && lx + 8 + txtW > xMax) { labelRight = false; }
+                if (!labelRight && lx - 8 - txtW < xMin) { labelRight = true; }
+                // If neither side fits, skip this label.
+                if ( labelRight && lx + 8 + txtW > xMax) { continue; }
+                if (!labelRight && lx - 8 - txtW < xMin) { continue; }
                 var ox = labelRight ?  8 : -8;
                 var tx = lx + ox;
-                var ty = ly - 14;
                 var just = labelRight
                     ? Graphics.TEXT_JUSTIFY_LEFT
                     : Graphics.TEXT_JUSTIFY_RIGHT;
-                // Compute bounding box of THIS label (with 2px padding).
-                var bx0 = labelRight ? (tx - 2) : (tx - estWidth - 2);
-                var bx1 = labelRight ? (tx + estWidth + 2) : (tx + 2);
-                var by0 = ty - 10;
-                var by1 = ty + 10;
-                // Reject if the bbox overlaps any already-placed label's bbox.
+                // Bbox of THIS label (with 2 px padding all around).
+                var bx0 = labelRight ? (tx - 2)        : (tx - txtW - 2);
+                var bx1 = labelRight ? (tx + txtW + 2) : (tx + 2);
+                var by0 = ty - 2;
+                var by1 = ty + fontH + 2;
+                // Reject if overlapping any already-placed bbox.
                 var collides = false;
                 for (var k = 0; k < placed.size(); k += 1) {
                     var px0 = placed[k][0]; var py0 = placed[k][1];
@@ -374,7 +386,7 @@ class CelestialView extends WatchUi.WatchFace {
                     }
                 }
                 if (collides) { continue; }
-                dc.drawText(tx, ty, Graphics.FONT_XTINY, labelables[i][3], just);
+                dc.drawText(tx, ty, Graphics.FONT_XTINY, name, just);
                 placed.add([bx0, by0, bx1, by1]);
                 drawnLabels += 1;
             }

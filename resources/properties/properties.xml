@@ -1,5 +1,5 @@
 <properties>
-    <property id="planetIndex"  type="number">3</property>
+    <property id="planetIndex"  type="number">2</property>
     <property id="phobosCal"    type="float">0.0</property>
     <property id="deimosCal"    type="float">0.0</property>
     <property id="showMarsTime" type="boolean">false</property>
